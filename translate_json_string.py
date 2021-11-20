@@ -107,7 +107,6 @@ ignorable = {
     "overmap_location",
     "overmap_special",
     "profession_item_substitutions",
-    "palette",
     "region_overlay",
     "region_settings",
     "relic_procgen_data",
@@ -120,6 +119,7 @@ ignorable = {
     "TRAIT_BLACKLIST",
     "trait_group",
     "uncraft",
+    "mood_face",
     "vehicle_group",
     "vehicle_placement",
 }
@@ -155,7 +155,6 @@ automatically_convertible = {
     "json_flag",
     "keybinding",
     "LOOT_ZONE",
-    "MAGAZINE",
     "map_extra",
     "MOD_INFO",
     "MONSTER",
@@ -258,6 +257,12 @@ def extract_bodypart(item):
         item["hp_bar_ui_text"] = writestr(item["hp_bar_ui_text"])
 
 
+def extract_sub_bodypart(item):
+    item["name_multiple"] = writestr(item["name"])
+    if "name_multiple" in item:
+        item["name_multiple"] = writestr(item["name_multiple"])
+
+
 def extract_clothing_mod(item):
     outfile = get_outfile("clothing_mod")
     item["implement_prompt"] = writestr(item["implement_prompt"])
@@ -269,6 +274,11 @@ def extract_construction(item):
     if "pre_note" in item:
         item["pre_note"] = writestr(item["pre_note"])
 
+def extract_effect_on_condition(item):
+    outfile = get_outfile("effect_on_condition")
+    extract_talk_effects(item["effect"], outfile)
+    if "false_effect" in item:
+        extract_talk_effects(item["false_effect"], outfile)
 
 def extract_harvest(item):
     outfile = get_outfile("harvest")
@@ -405,6 +415,26 @@ def extract_gun(item):
         else:
             item["ranged_damage"]["damage_type"] = writestr(damage_type, context="damage type")
 
+def extract_magazine(item):
+    if "name" in item:
+        item_name = item.get("name")
+        if item["type"] in needs_plural:
+            item["name"] = writestr(item_name, pl_fmt=True)
+        else:
+            item["name"] = writestr(item_name)
+    if "description" in item:
+        description = item.get("description")
+        item["description"] = writestr(description)
+    if "variants" in item:
+        for variant in item.get("variants"):
+            vname = variant.get("name")
+            variant["name"]=writestr(vname, pl_fmt=True)
+            vdesc = variant.get("description")
+            variant["description"] =writestr(vdesc)
+    if "use_action" in item:
+        use_action = item.get("use_action")
+        item_name = item.get("name")
+        item["use_action"]=extract_use_action_msgs(use_action, item_name, {})
 
 def extract_gunmod(item):
     outfile = get_outfile("gunmod")
@@ -500,6 +530,11 @@ def extract_monster_attack(item):
     if "no_dmg_msg_npc" in item:
         item["no_dmg_msg_npc"] = writestr(item.get("no_dmg_msg_npc"))
 
+def extract_palette(item):
+    if "signs" in item:
+        for (k, v) in items_sorted_by_key(item["signs"]):
+            sign = v.get("signage", None)
+            item["signs"][k]["signage"] = writestr(sign, comment="Sign")
 
 def extract_recipes(item):
     outfile = get_outfile("recipe")
@@ -795,6 +830,22 @@ def extract_snippets(item):
         else:
             writestr(snip["text"])
 
+def extract_speed_description(item):
+    values = item.get("values", [])
+    comment = "speed description of monsters"
+    for value in values:
+        if 'descriptions' in value:
+            descriptions = value.get("descriptions")
+            if type(descriptions) is str:
+                value["descriptions"] = writestr(descriptions, comment=comment)
+            elif type(descriptions) is list:
+                value["descriptions"] = [writestr(description) for description in descriptions]
+
+
+def extract_weapon_category(item):
+    name = item.get("name")
+    comment = "weapon category name"
+    item["name"] = writestr(name, comment=comment)
 
 def extract_vehicle_part_category(item):
     outfile = get_outfile("vehicle_part_categories")
@@ -803,19 +854,28 @@ def extract_vehicle_part_category(item):
     item["name"] = writestr(name)
     item["short_name"] = writestr(short_name)
 
+def extract_widget(item):
+    if "label" in item:
+        item["label"] = writestr(item["label"])
+    if "strings" in item:
+        item["strings"] = writestr(item["strings"])
+
 
 # these objects need to have their strings specially extracted
 extract_specials = {
     "achievement": extract_achievement,
     "body_part": extract_bodypart,
+    "sub_body_part": extract_sub_bodypart,
     "clothing_mod": extract_clothing_mod,
     "conduct": extract_achievement,
     "construction": extract_construction,
+    "effect_on_condition": extract_effect_on_condition,
     "effect_type": extract_effect_type,
     "fault": extract_fault,
     "GUN": extract_gun,
     "GUNMOD": extract_gunmod,
     "harvest": extract_harvest,
+    "MAGAZINE": extract_magazine,
     "mapgen": extract_mapgen,
     "martial_art": extract_martial_art,
     "material": extract_material,
@@ -824,12 +884,16 @@ extract_specials = {
     "movement_mode": extract_move_mode,
     "mutation": extract_mutation,
     "mutation_category": extract_mutation_category,
+    "palette": extract_palette,
+    "practice": extract_recipes,
     "profession": extract_professions,
     "recipe_category": extract_recipe_category,
     "recipe": extract_recipes,
     "recipe_group": extract_recipe_group,
     "scenario": extract_scenarios,
     "snippet": extract_snippets,
+    "speed_description": extract_speed_description,
+    "weapon_category": extract_weapon_category,
     "talk_topic": extract_talk_topic,
     "trap": extract_trap,
     "gate": extract_gate,
@@ -838,6 +902,7 @@ extract_specials = {
     "ter_furn_transform": extract_ter_furn_transform_messages,
     "skill_display_type": extract_skill_display_type,
     "vehicle_part_category": extract_vehicle_part_category,
+    "widget": extract_widget,
 }
 
 #
@@ -849,7 +914,6 @@ directories = {os.path.normpath(i) for i in {
     "data/json",
     "data/mods",
     "data/core",
-    "data/legacy",
     "data/help",
 }}
 to_dir = os.path.normpath("lang/json")
