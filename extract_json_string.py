@@ -16,6 +16,7 @@ from sys import exit
 
 parser = OptionParser()
 parser.add_option("-v", "--verbose", dest="verbose", help="be verbose")
+parser.add_option("-o", "--out", dest="out_dir",default="translate/",help="out dir",)
 (options, args) = parser.parse_args()
 
 
@@ -1595,21 +1596,21 @@ if len(ignored_types) != 0:
         print(ignored)
     exit(-1)
 
-print("==> Generating the list of all Git tracked files")
-prepare_git_file_list()
-print("==> Parsing JSON")
-for i in sorted(directories):
-    print("----> Traversing directory {}".format(i))
-    extract_all_from_dir(i)
-print("==> Finalizing")
-if len(known_types - found_types) != 0:
-    print("WARNING: type {} not found in any JSON objects".format(
-        known_types - found_types))
-if len(needs_plural - found_types) != 0:
-    print("WARNING: type {} from needs_plural not found in any JSON "
-          "objects".format(needs_plural - found_types))
+# print("==> Generating the list of all Git tracked files")
+# prepare_git_file_list()
+# print("==> Parsing JSON")
+# for i in sorted(directories):
+#     print("----> Traversing directory {}".format(i))
+#     extract_all_from_dir(i)
+# print("==> Finalizing")
+# if len(known_types - found_types) != 0:
+#     print("WARNING: type {} not found in any JSON objects".format(
+#         known_types - found_types))
+# if len(needs_plural - found_types) != 0:
+#     print("WARNING: type {} from needs_plural not found in any JSON "
+#           "objects".format(needs_plural - found_types))
 
-print("Output files in %s" % to_dir)
+# print("Output files in %s" % to_dir)
 
 # done.
 
@@ -1629,15 +1630,15 @@ def getTranslateString(filename=None,string="", context=None, format_strings=Fal
             raise WrongJSONItem("ERROR: 'ctxt' found in json when `context` "
                                 "parameter is specified", string)
         if "str_pl" in string:
-            string["str_pl"] = gettext.npgettext(context, string["str_pl"], string["str_pl"],1)
+            string["str_pl"] = translater.npgettext(context, string["str_pl"], string["str_pl"],1)
         if "str" in string:
-            string["str"] = gettext.npgettext(context, string["str"], pl_fmt,1)
+            string["str"] = translater.npgettext(context, string["str"], pl_fmt,1)
         elif "str_sp" in string:
-            string["str_sp"] = gettext.npgettext(context, string["str_sp"], string["str_sp"],1)
+            string["str_sp"] = translater.npgettext(context, string["str_sp"], string["str_sp"],1)
         else:
             raise WrongJSONItem("ERROR: 'str' or 'str_sp' not found", string)
     elif type(string) is str:
-        string = gettext.npgettext(context, string, pl_fmt,1)
+        string = translater.npgettext(context, string, pl_fmt,1)
     elif string is None:
         return
     else:
@@ -1659,6 +1660,8 @@ def translate_all_from_file(json_file,translate_file):
         else:
             for jsonobject in jsondata:
                 extract(jsonobject, json_file)
+        if not os.path.exists(os.path.dirname(translate_file)):
+            os.makedirs(os.path.dirname(translate_file))
         json.dump(jsondata, open(translate_file, mode="w", encoding="utf-8"), ensure_ascii=False, indent=2)
     except WrongJSONItem as E:
         print("---\nFile: '{0}'".format(json_file))
@@ -1674,7 +1677,7 @@ def translate_all_from_dir(json_dir,language_code):
     skiplist = [os.path.normpath(".gitkeep")]
     for f in allfiles:
         full_name = os.path.join(json_dir, f)
-        full_translate_file = os.path.join(language_code,json_dir,f)
+        full_translate_file = os.path.join(options.out_dir,language_code,json_dir,f)
         if os.path.isdir(full_name):
             dirs.append(f)
         elif f in skiplist or full_name in ignore_files:
@@ -1688,3 +1691,27 @@ def translate_all_from_dir(json_dir,language_code):
                 print("Skipping file: '{}'".format(f))
     for d in dirs:
         translate_all_from_dir(os.path.join(json_dir, d),language_code)
+
+
+mo_dir = "lang/mo/"
+lang_codes = os.listdir(mo_dir)
+
+print("==> Generating the list of all Git tracked files")
+print("==> Parsing JSON")
+translater = None
+for lang_code in lang_codes:
+    translater = gettext.translation("cataclysm-dda", localedir=mo_dir, languages=[lang_code])
+    translater.install()
+    print("==> start translate {}".format(lang_code))
+    for i in sorted(directories):
+        print("----> Traversing directory {}".format(i))
+        translate_all_from_dir(i,lang_code)
+    print("==> Finalizing")
+    if len(known_types - found_types) != 0:
+        print("WARNING: type {} not found in any JSON objects".format(
+            known_types - found_types))
+    if len(needs_plural - found_types) != 0:
+        print("WARNING: type {} from needs_plural not found in any JSON "
+            "objects".format(needs_plural - found_types))
+
+    print("Output files in %s" % options.out_dir)
