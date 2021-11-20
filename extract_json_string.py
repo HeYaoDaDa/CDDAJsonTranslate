@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 "Extract translatable strings from the .json files in data/json."
 
+import gettext
+import json
 import json
 import os
 import itertools
@@ -1116,6 +1118,36 @@ extract_specials = {
     "vehicle_part_category": extract_vehicle_part_category,
     "widget": extract_widget,
 }
+
+#
+#  MODIFY TO TRANSLATE
+#
+
+def getTranslateString(filename=None,string="", context=None, format_strings=False, comment=None, pl_fmt=False, _local_fp_cache=dict()):
+    "Wrap the string and write to the file."
+    if type(string) is list:
+        return [getTranslateString(filename,entry, context, format_strings,comment,pl_fmt,_local_fp_cache) for entry in string]
+    elif type(string) is dict:
+        if context is None:
+            context = string.get("ctxt")
+        elif "ctxt" in string:
+            raise WrongJSONItem("ERROR: 'ctxt' found in json when `context` "
+                                "parameter is specified", string)
+        if "str_pl" in string:
+            string["str_pl"] = gettext.npgettext(context, string["str_pl"], string["str_pl"],1)
+        if "str" in string:
+            string["str"] = gettext.npgettext(context, string["str"], pl_fmt,1)
+        elif "str_sp" in string:
+            string["str_sp"] = gettext.npgettext(context, string["str_sp"], string["str_sp"],1)
+        else:
+            raise WrongJSONItem("ERROR: 'str' or 'str_sp' not found", string)
+    elif type(string) is str:
+        string = gettext.npgettext(context, string, pl_fmt,1)
+    elif string is None:
+        return
+    else:
+        print("WARN: value is not a string, dict, list, or None", string)
+    return string
 
 #
 #  PREPARATION
