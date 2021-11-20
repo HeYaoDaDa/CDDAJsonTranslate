@@ -1120,36 +1120,6 @@ extract_specials = {
 }
 
 #
-#  MODIFY TO TRANSLATE
-#
-
-def getTranslateString(filename=None,string="", context=None, format_strings=False, comment=None, pl_fmt=False, _local_fp_cache=dict()):
-    "Wrap the string and write to the file."
-    if type(string) is list:
-        return [getTranslateString(filename,entry, context, format_strings,comment,pl_fmt,_local_fp_cache) for entry in string]
-    elif type(string) is dict:
-        if context is None:
-            context = string.get("ctxt")
-        elif "ctxt" in string:
-            raise WrongJSONItem("ERROR: 'ctxt' found in json when `context` "
-                                "parameter is specified", string)
-        if "str_pl" in string:
-            string["str_pl"] = gettext.npgettext(context, string["str_pl"], string["str_pl"],1)
-        if "str" in string:
-            string["str"] = gettext.npgettext(context, string["str"], pl_fmt,1)
-        elif "str_sp" in string:
-            string["str_sp"] = gettext.npgettext(context, string["str_sp"], string["str_sp"],1)
-        else:
-            raise WrongJSONItem("ERROR: 'str' or 'str_sp' not found", string)
-    elif type(string) is str:
-        string = gettext.npgettext(context, string, pl_fmt,1)
-    elif string is None:
-        return
-    else:
-        print("WARN: value is not a string, dict, list, or None", string)
-    return string
-
-#
 #  PREPARATION
 #
 
@@ -1642,3 +1612,79 @@ if len(needs_plural - found_types) != 0:
 print("Output files in %s" % to_dir)
 
 # done.
+
+
+#
+#  MODIFY TO TRANSLATE
+#
+
+def getTranslateString(filename=None,string="", context=None, format_strings=False, comment=None, pl_fmt=False, _local_fp_cache=dict()):
+    "Wrap the string and write to the file."
+    if type(string) is list:
+        return [getTranslateString(filename,entry, context, format_strings,comment,pl_fmt,_local_fp_cache) for entry in string]
+    elif type(string) is dict:
+        if context is None:
+            context = string.get("ctxt")
+        elif "ctxt" in string:
+            raise WrongJSONItem("ERROR: 'ctxt' found in json when `context` "
+                                "parameter is specified", string)
+        if "str_pl" in string:
+            string["str_pl"] = gettext.npgettext(context, string["str_pl"], string["str_pl"],1)
+        if "str" in string:
+            string["str"] = gettext.npgettext(context, string["str"], pl_fmt,1)
+        elif "str_sp" in string:
+            string["str_sp"] = gettext.npgettext(context, string["str_sp"], string["str_sp"],1)
+        else:
+            raise WrongJSONItem("ERROR: 'str' or 'str_sp' not found", string)
+    elif type(string) is str:
+        string = gettext.npgettext(context, string, pl_fmt,1)
+    elif string is None:
+        return
+    else:
+        print("WARN: value is not a string, dict, list, or None", string)
+    return string
+
+
+def translate_all_from_file(json_file,translate_file):
+    "Extract translatable strings from every object in the specified file."
+    if options.verbose:
+        print("Loading {}".format(json_file))
+
+    with open(json_file, encoding="utf-8") as fp:
+        jsondata = json.load(fp)
+    # it's either an array of objects, or a single object
+    try:
+        if hasattr(jsondata, "keys"):
+            extract(jsondata, json_file)
+        else:
+            for jsonobject in jsondata:
+                extract(jsonobject, json_file)
+        json.dump(jsondata, open(translate_file, mode="w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    except WrongJSONItem as E:
+        print("---\nFile: '{0}'".format(json_file))
+        print(E)
+        exit(1)
+
+def translate_all_from_dir(json_dir,language_code):
+    """Extract strings from every json file in the specified directory,
+    recursing into any subdirectories."""
+    allfiles = os.listdir(json_dir)
+    allfiles.sort()
+    dirs = []
+    skiplist = [os.path.normpath(".gitkeep")]
+    for f in allfiles:
+        full_name = os.path.join(json_dir, f)
+        full_translate_file = os.path.join(language_code,json_dir,f)
+        if os.path.isdir(full_name):
+            dirs.append(f)
+        elif f in skiplist or full_name in ignore_files:
+            continue
+        elif any(full_name.startswith(dir) for dir in ignore_directories):
+            continue
+        elif f.endswith(".json"):
+            translate_all_from_file(full_name,full_translate_file)
+        elif f not in not_json:
+            if options.verbose:
+                print("Skipping file: '{}'".format(f))
+    for d in dirs:
+        translate_all_from_dir(os.path.join(json_dir, d),language_code)
