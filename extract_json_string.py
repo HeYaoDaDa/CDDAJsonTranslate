@@ -1618,6 +1618,11 @@ if len(ignored_types) != 0:
 #
 #  MODIFY TO TRANSLATE
 #
+#  writestr(\(\w*,\s?(\w+\[.*\]).*\))$    $2=getTranslateString$1
+#
+#
+#
+#
 
 def getTranslateString(filename=None,string="", context=None, format_strings=False, comment=None, pl_fmt=False, _local_fp_cache=dict()):
     "Wrap the string and write to the file."
