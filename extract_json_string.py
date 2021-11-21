@@ -1646,13 +1646,13 @@ if options.languages != "":
 else:
     lang_codes = os.listdir(mo_dir)
 
-print("==> Generating the list of all Git tracked files")
 print("==> Parsing JSON")
 translater = None
+
 for lang_code in lang_codes:
     translater = gettext.translation("cataclysm-dda", localedir=mo_dir, languages=[lang_code])
     translater.install()
-    print("==> start translate {}".format(lang_code))
+    print("===> start translate {}".format(lang_code))
     for i in sorted(directories):
         print("----> Traversing directory {}".format(i))
         translate_all_from_dir(i,lang_code)
@@ -1663,5 +1663,5 @@ for lang_code in lang_codes:
     if len(needs_plural - found_types) != 0:
         print("WARNING: type {} from needs_plural not found in any JSON "
             "objects".format(needs_plural - found_types))
-
-    print("Output files in %s" % options.out_dir)
+    print("==> Output file in %s" % os.path.join(options.out_dir,lang_code))
+print("Output files in %s" % options.out_dir)
