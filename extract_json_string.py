@@ -250,48 +250,48 @@ def extract_achievement(a):
     outfile = get_outfile(a["type"])
     for f in ("name", "description"):
         if f in a:
-            writestr(outfile, a[f])
+            a[f]=getTranslateString(outfile, a[f])
     for req in a.get("requirements", ()):
         if "description" in req:
-            writestr(outfile, req["description"])
+            req["description"]=getTranslateString(outfile, req["description"])
 
 
 def extract_bodypart(item):
     outfile = get_outfile("bodypart")
     # See comments in `body_part_struct::load` of bodypart.cpp about why xxx
     # and xxx_multiple are not inside a single translation object.
-    writestr(outfile, item["name"])
+    item["name"]=getTranslateString(outfile, item["name"])
     if "name_multiple" in item:
-        writestr(outfile, item["name_multiple"])
-    writestr(outfile, item["accusative"])
+        item["name_multiple"]=getTranslateString(outfile, item["name_multiple"])
+    item["accusative"]=getTranslateString(outfile, item["accusative"])
     if "accusative_multiple" in item:
-        writestr(outfile, item["accusative_multiple"])
-    writestr(outfile, item["encumbrance_text"])
-    writestr(outfile, item["heading"])
-    writestr(outfile, item["heading_multiple"])
+        item["accusative_multiple"]=getTranslateString(outfile, item["accusative_multiple"])
+    item["encumbrance_text"]=getTranslateString(outfile, item["encumbrance_text"])
+    item["heading"]=getTranslateString(outfile, item["heading"])
+    item["heading_multiple"]=getTranslateString(outfile, item["heading_multiple"])
     if "smash_message" in item:
-        writestr(outfile, item["smash_message"])
+        item["smash_message"]=getTranslateString(outfile, item["smash_message"])
     if "hp_bar_ui_text" in item:
-        writestr(outfile, item["hp_bar_ui_text"])
+        item["hp_bar_ui_text"]=getTranslateString(outfile, item["hp_bar_ui_text"])
 
 
 def extract_sub_bodypart(item):
     outfile = get_outfile("sub_bodypart")
-    writestr(outfile, item["name"])
+    item["name"]=getTranslateString(outfile, item["name"])
     if "name_multiple" in item:
-        writestr(outfile, item["name_multiple"])
+        item["name_multiple"]=getTranslateString(outfile, item["name_multiple"])
 
 
 def extract_clothing_mod(item):
     outfile = get_outfile("clothing_mod")
-    writestr(outfile, item["implement_prompt"])
-    writestr(outfile, item["destroy_prompt"])
+    item["implement_prompt"]=getTranslateString(outfile, item["implement_prompt"])
+    item["destroy_prompt"]=getTranslateString(outfile, item["destroy_prompt"])
 
 
 def extract_construction(item):
     outfile = get_outfile("construction")
     if "pre_note" in item:
-        writestr(outfile, item["pre_note"])
+        item["pre_note"]=getTranslateString(outfile, item["pre_note"])
 
 
 def extract_effect_on_condition(item):
@@ -304,24 +304,24 @@ def extract_effect_on_condition(item):
 def extract_harvest(item):
     outfile = get_outfile("harvest")
     if "message" in item:
-        writestr(outfile, item["message"])
+        item["message"]=getTranslateString(outfile, item["message"])
 
 
 def extract_material(item):
     outfile = get_outfile("material")
-    writestr(outfile, item["name"])
+    item["name"]=getTranslateString(outfile, item["name"])
     wrote = False
     if "bash_dmg_verb" in item:
-        writestr(outfile, item["bash_dmg_verb"])
+        item["bash_dmg_verb"]=getTranslateString(outfile, item["bash_dmg_verb"])
         wrote = True
     if "cut_dmg_verb" in item:
-        writestr(outfile, item["cut_dmg_verb"])
+        item["cut_dmg_verb"]=getTranslateString(outfile, item["cut_dmg_verb"])
         wrote = True
     if "dmg_adj" in item:
-        writestr(outfile, item["dmg_adj"][0])
-        writestr(outfile, item["dmg_adj"][1])
-        writestr(outfile, item["dmg_adj"][2])
-        writestr(outfile, item["dmg_adj"][3])
+        item["dmg_adj"][0]=getTranslateString(outfile, item["dmg_adj"][0])
+        item["dmg_adj"][1]=getTranslateString(outfile, item["dmg_adj"][1])
+        item["dmg_adj"][2]=getTranslateString(outfile, item["dmg_adj"][2])
+        item["dmg_adj"][3]=getTranslateString(outfile, item["dmg_adj"][3])
         wrote = True
     if not wrote and "copy-from" not in item:
         print("WARNING: {}: no mandatory field in item: {}".format(
@@ -332,14 +332,14 @@ def extract_martial_art(item):
     outfile = get_outfile("martial_art")
     if "name" in item:
         name = get_singular_name(item["name"])
-        writestr(outfile, name)
+        item["name"] = getTranslateString(outfile, name)
     else:
         name = item["id"]
     if "description" in item:
-        writestr(outfile, item["description"],
+        item["description"]=getTranslateString(outfile, item["description"],
                  comment="Description for martial art '{}'".format(name))
     if "initiate" in item:
-        writestr(outfile, item["initiate"], format_strings=True,
+        item["initiate"]=getTranslateString(outfile, item["initiate"], format_strings=True,
                  comment="initiate message for martial art '{}'".format(name))
     onhit_buffs = item.get("onhit_buffs", list())
     static_buffs = item.get("static_buffs", list())
@@ -357,53 +357,53 @@ def extract_martial_art(item):
              onattack_buffs + onpause_buffs + onblock_buffs + ongethit_buffs +
              onmiss_buffs + oncrit_buffs + onkill_buffs)
     for buff in buffs:
-        writestr(outfile, buff["name"])
+        buff["name"]=getTranslateString(outfile, buff["name"])
         if buff["name"] == item["name"]:
             c = "Description of buff for martial art '{}'".format(name)
         else:
             c = "Description of buff '{}' for martial art '{}'".format(
                 buff["name"], name)
-        writestr(outfile, buff["description"], comment=c)
+        buff["description"]=getTranslateString(outfile, buff["description"], comment=c)
 
 
 def extract_move_mode(item):
     outfile = get_outfile("move_modes")
     # Move mode name
     name = item["name"]
-    writestr(outfile, name, comment="Move mode name")
+    item["name"] = getTranslateString(outfile, name, comment="Move mode name")
     # The character in the move menu
     character = item["character"]
-    writestr(outfile, character,
+    item["character"] = getTranslateString(outfile, character,
              comment="Move mode character in move mode menu")
     # The character in the panels
     pchar = item["panel_char"]
-    writestr(outfile, pchar, comment="movement-type")
+    item["panel_char"] = getTranslateString(outfile, pchar, comment="movement-type")
     # Successful change message
     change_good_none = item["change_good_none"]
-    writestr(outfile, change_good_none,
+    item["change_good_none"] = getTranslateString(outfile, change_good_none,
              comment="Successfully switch to this move mode, no steed")
     # Successful change message (animal steed)
     change_good_animal = item["change_good_animal"]
-    writestr(outfile, change_good_animal,
+    item["change_good_animal"] = getTranslateString(outfile, change_good_animal,
              comment="Successfully switch to this move mode, animal steed")
     # Successful change message (mech steed)
     change_good_mech = item["change_good_mech"]
-    writestr(outfile, change_good_mech,
+    item["change_good_mech"] = getTranslateString(outfile, change_good_mech,
              comment="Successfully switch to this move mode, mech steed")
     if "change_bad_none" in item:
         # Failed change message
         change_bad_none = item["change_bad_none"]
-        writestr(outfile, change_bad_none,
+        item["change_bad_none"] = getTranslateString(outfile, change_bad_none,
                  comment="Failure to switch to this move mode, no steed")
     if "change_bad_animal" in item:
         # Failed change message (animal steed)
         change_bad_animal = item["change_bad_animal"]
-        writestr(outfile, change_bad_animal,
+        item["change_bad_animal"] = getTranslateString(outfile, change_bad_animal,
                  comment="Failure to switch to this move mode, animal steed")
     if "change_bad_mech" in item:
         # Failed change message (mech steed)
         change_bad_mech = item["change_bad_mech"]
-        writestr(outfile, change_bad_mech,
+        item["change_bad_mech"] = getTranslateString(outfile, change_bad_mech,
                  comment="Failure to switch to this move mode, mech steed")
 
 
@@ -416,15 +416,13 @@ def extract_effect_type(item):
         if len(ctxt_name) == len(item.get("desc", ())):
             for nm_desc in zip(ctxt_name, item.get("desc", ())):
                 comment = "Description of effect '{}'.".format(nm_desc[0])
-                writestr(outfile, nm_desc[0])
-                writestr(outfile, nm_desc[1], format_strings=True,
+                nm_desc[0]=getTranslateString(outfile, nm_desc[0])
+                nm_desc[1]=getTranslateString(outfile, nm_desc[1], format_strings=True,
                          comment=comment)
         else:
-            for i in ctxt_name:
-                writestr(outfile, i)
+            item["name"] = [getTranslateString(outfile,i)for i in ctxt_name]
             for f in ["desc", "reduced_desc"]:
-                for i in item.get(f, ()):
-                    writestr(outfile, i, format_strings=True)
+                item[f] = [getTranslateString(outfile,i)for i in item.get(f, ())]
 
     name = None
     if ctxt_name:
@@ -432,79 +430,59 @@ def extract_effect_type(item):
     # apply_message
     msg = item.get("apply_message")
     if not name:
-        writestr(outfile, msg, format_strings=True)
+        item["apply_message"] = getTranslateString(outfile, msg, format_strings=True)
     else:
         comment = "Apply message for effect(s) '{}'.".format(', '.join(name))
-        writestr(outfile, msg, format_strings=True, comment=comment)
+        item["apply_message"] = getTranslateString(outfile, msg, format_strings=True, comment=comment)
 
     # remove_message
     msg = item.get("remove_message")
     if not name:
-        writestr(outfile, msg, format_strings=True)
+        item["remove_message"] = getTranslateString(outfile, msg, format_strings=True)
     else:
         comment = "Remove message for effect(s) '{}'.".format(', '.join(name))
-        writestr(outfile, msg, format_strings=True, comment=comment)
+        item["remove_message"] = getTranslateString(outfile, msg, format_strings=True, comment=comment)
 
     # miss messages
     msg = item.get("miss_messages", ())
-    if not name:
-        for m in msg:
-            writestr(outfile, m[0])
-    else:
-        for m in msg:
-            comment = "Miss message for effect(s) '{}'.".format(
-                ', '.join(name))
-            writestr(outfile, m[0], comment=comment)
-    msg = item.get("decay_messages", ())
-    if not name:
-        for m in msg:
-            writestr(outfile, m[0])
-    else:
-        for m in msg:
-            comment = "Decay message for effect(s) '{}'.".format(
-                ', '.join(name))
-            writestr(outfile, m[0], comment=comment)
+    item["miss_messages"] = [getTranslateString(outfile, m[0])for m in msg]
+    item["decay_messages"] = [getTranslateString(outfile, m[0])for m in msg]
 
     # speed_name
     if "speed_name" in item:
         if not name:
-            writestr(outfile, item.get("speed_name"))
+            item["speed_name"]=getTranslateString(outfile, item.get("speed_name"))
         else:
             comment = "Speed name of effect(s) '{}'.".format(', '.join(name))
-            writestr(outfile, item.get("speed_name"), comment=comment)
+            item["speed_name"]=getTranslateString(outfile, item.get("speed_name"), comment=comment)
 
     # death_msg
     if "death_msg" in item:
         if not name:
-            writestr(outfile, item.get("death_msg"))
+            item["death_msg"]=getTranslateString(outfile, item.get("death_msg"))
         else:
             comment = "Death message of effect(s) '{}'."
             comment.format(', '.json(name))
-            writestr(outfile, item.get("death_msg"), comment=comment)
-
+            item["death_msg"]=getTranslateString(outfile, item.get("death_msg"), comment=comment)
     # apply and remove memorial messages.
     msg = item.get("apply_memorial_log")
     if not name:
-        writestr(outfile, msg, context="memorial_male")
-        writestr(outfile, msg, context="memorial_female")
+        item["apply_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male")
     else:
         comment = "Male memorial apply log for effect(s) '{}'.".format(
             ', '.join(name))
-        writestr(outfile, msg, context="memorial_male", comment=comment)
+        item["apply_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
         comment = "Female memorial apply log for effect(s) '{}'.".format(
             ', '.join(name))
-        writestr(outfile, msg, context="memorial_female", comment=comment)
     msg = item.get("remove_memorial_log")
     if not name:
-        writestr(outfile, msg, context="memorial_male")
-        writestr(outfile, msg, context="memorial_female")
+        item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male")
     else:
         comment = "Male memorial remove log for effect(s) '{}'.".format(
             ', '.join(name))
-        writestr(outfile, msg, context="memorial_male", comment=comment)
+        item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
         comment = "Female memorial remove log for effect(s) '{}'.".format(
             ', '.join(name))
-        writestr(outfile, msg, context="memorial_female", comment=comment)
 
 
 def extract_gun(item):
@@ -512,32 +490,32 @@ def extract_gun(item):
     if "name" in item:
         item_name = item.get("name")
         if item["type"] in needs_plural:
-            writestr(outfile, item_name, pl_fmt=True)
+            item["type"] = getTranslateString(outfile, item_name, pl_fmt=True)
         else:
-            writestr(outfile, item_name)
+            item["type"] = getTranslateString(outfile, item_name)
     if "description" in item:
         description = item.get("description")
-        writestr(outfile, description)
+        item["description"] = getTranslateString(outfile, description)
     if "variants" in item:
         for variant in item.get("variants"):
             vname = variant.get("name")
-            writestr(outfile, vname, pl_fmt=True)
+            variant["name"] = getTranslateString(outfile, vname, pl_fmt=True)
             vdesc = variant.get("description")
-            writestr(outfile, vdesc)
+            variant["description"] = getTranslateString(outfile, vdesc)
     if "modes" in item:
         modes = item.get("modes")
         for fire_mode in modes:
-            writestr(outfile, fire_mode[1])
+            fire_mode[1]=getTranslateString(outfile, fire_mode[1])
     if "skill" in item:
         # legacy code: the "gun type" is calculated in `item::gun_type` and
         # it's basically the skill id, except for archery (which is either
         # bow or crossbow). Once "gun type" is loaded from JSON, it should
         # be extracted directly.
         if not item.get("skill") == "archery":
-            writestr(outfile, item.get("skill"), context="gun_type_type")
+            item["skill"]=getTranslateString(outfile, item.get("skill"), context="gun_type_type")
     if "reload_noise" in item:
         item_reload_noise = item.get("reload_noise")
-        writestr(outfile, item_reload_noise)
+        item["reload_noise"] = getTranslateString(outfile, item_reload_noise)
 
 
 def extract_magazine(item):
@@ -545,18 +523,18 @@ def extract_magazine(item):
     if "name" in item:
         item_name = item.get("name")
         if item["type"] in needs_plural:
-            writestr(outfile, item_name, pl_fmt=True)
+            item["name"] = getTranslateString(outfile, item_name, pl_fmt=True)
         else:
-            writestr(outfile, item_name)
+            item["name"] = getTranslateString(outfile, item_name)
     if "description" in item:
         description = item.get("description")
-        writestr(outfile, description)
+        item["description"] = getTranslateString(outfile, description)
     if "variants" in item:
         for variant in item.get("variants"):
             vname = variant.get("name")
-            writestr(outfile, vname, pl_fmt=True)
+            item["name"] = getTranslateString(outfile, vname, pl_fmt=True)
             vdesc = variant.get("description")
-            writestr(outfile, vdesc)
+            item["description"] = getTranslateString(outfile, vdesc)
     if "use_action" in item:
         use_action = item.get("use_action")
         item_name = item.get("name")
@@ -568,42 +546,42 @@ def extract_gunmod(item):
     if "name" in item:
         item_name = item.get("name")
         if item["type"] in needs_plural:
-            writestr(outfile, item_name, pl_fmt=True)
+            item["name"] = getTranslateString(outfile, item_name, pl_fmt=True)
         else:
-            writestr(outfile, item_name)
+            item["name"] = getTranslateString(outfile, item_name)
     if "description" in item:
         description = item.get("description")
-        writestr(outfile, description)
+        item["description"] = getTranslateString(outfile, description)
     if "mode_modifier" in item:
         modes = item.get("mode_modifier")
         for fire_mode in modes:
-            writestr(outfile, fire_mode[1])
+            fire_mode[1]=getTranslateString(outfile, fire_mode[1])
     if "location" in item:
         location = item.get("location")
-        writestr(outfile, location)
+        item["location"] = getTranslateString(outfile, location)
     if "mod_targets" in item:
         for target in item["mod_targets"]:
-            writestr(outfile, target, context="gun_type_type")
+            item["mod_targets"] = getTranslateString(outfile, target, context="gun_type_type")
 
 
 def extract_professions(item):
     outfile = get_outfile("professions")
     nm = item["name"]
     if type(nm) == dict:
-        writestr(outfile, nm["male"], context="profession_male")
-        writestr(outfile, item["description"], context="prof_desc_male",
+        nm["male"]=getTranslateString(outfile, nm["male"], context="profession_male")
+        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_male",
                  comment="Profession ({}) description".format(nm["male"]))
 
-        writestr(outfile, nm["female"], context="profession_female")
-        writestr(outfile, item["description"], context="prof_desc_female",
+        nm["female"]=getTranslateString(outfile, nm["female"], context="profession_female")
+        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_female",
                  comment="Profession ({0}) description".format(nm["female"]))
     else:
-        writestr(outfile, nm, context="profession_male")
-        writestr(outfile, item["description"], context="prof_desc_male",
+        item["name"] = getTranslateString(outfile, nm, context="profession_male")
+        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_male",
                  comment="Profession (male {}) description".format(nm))
 
-        writestr(outfile, nm, context="profession_female")
-        writestr(outfile, item["description"], context="prof_desc_female",
+        item["name"] = getTranslateString(outfile, nm, context="profession_female")
+        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_female",
                  comment="Profession (female {}) description".format(nm))
 
 
@@ -612,27 +590,27 @@ def extract_scenarios(item):
     # writestr will not write string if it is None.
     name = item.get("name")
     comment = "Name for scenario '{}' for a male character".format(name)
-    writestr(outfile, name, context="scenario_male", comment=comment)
+    item["name"] = getTranslateString(outfile, name, context="scenario_male", comment=comment)
     comment = "Name for scenario '{}' for a female character".format(name)
-    writestr(outfile, name, context="scenario_female", comment=comment)
+    item["name"] = getTranslateString(outfile, name, context="scenario_female", comment=comment)
     if name:
         msg = item.get("description")
         if msg:
             comment = ("Description for scenario '{}' for a male "
                        "character.".format(name))
-            writestr(outfile, msg, context="scen_desc_male", comment=comment)
+            item["description"] = getTranslateString(outfile, msg, context="scen_desc_male", comment=comment)
             comment = ("Description for scenario '{}' for a female "
                        "character.".format(name))
-            writestr(outfile, msg, context="scen_desc_female",
+            item["description"] = getTranslateString(outfile, msg, context="scen_desc_female",
                      comment=comment)
         msg = item.get("start_name")
         if msg:
             comment = "Starting location for scenario '{}'.".format(name)
-            writestr(outfile, msg, context="start_name", comment=comment)
+            item["start_name"] = getTranslateString(outfile, msg, context="start_name", comment=comment)
     else:
         for f in ["description", "start_name"]:
             found = item.get(f, None)
-            writestr(outfile, found)
+            item[f] = getTranslateString(outfile, found)
 
 
 def items_sorted_by_key(d):
@@ -647,21 +625,21 @@ def extract_mapgen(item):
             for special in objval:
                 for (speckey, specval) in items_sorted_by_key(special):
                     if speckey == "signage":
-                        writestr(outfile, specval, comment="Sign")
+                        special[speckey] = getTranslateString(outfile, specval, comment="Sign")
         elif objkey == "signs":
             for (k, v) in items_sorted_by_key(objval):
                 sign = v.get("signage", None)
-                writestr(outfile, sign, comment="Sign")
+                sign["signage"] = getTranslateString(outfile, sign, comment="Sign")
         elif objkey == "computers":
             for (k, v) in items_sorted_by_key(objval):
                 if "name" in v:
-                    writestr(outfile, v.get("name"), comment="Computer name")
+                    v["name"]=getTranslateString(outfile, v.get("name"), comment="Computer name")
                 if "options" in v:
                     for opt in v.get("options"):
-                        writestr(outfile, opt.get("name"),
+                        opt["name"]=getTranslateString(outfile, opt.get("name"),
                                  comment="Computer option")
                 if "access_denied" in v:
-                    writestr(outfile, v.get("access_denied"),
+                    v["access_denied"]=getTranslateString(outfile, v.get("access_denied"),
                              comment="Computer access denied warning")
 
 
@@ -670,19 +648,19 @@ def extract_palette(item):
     if "signs" in item:
         for (k, v) in items_sorted_by_key(item["signs"]):
             sign = v.get("signage", None)
-            writestr(outfile, sign, comment="Sign")
+            sign["signage"] = getTranslateString(outfile, sign, comment="Sign")
 
 
 def extract_monster_attack(item):
     outfile = get_outfile("monster_attack")
     if "hit_dmg_u" in item:
-        writestr(outfile, item.get("hit_dmg_u"))
+        item["hit_dmg_u"]=getTranslateString(outfile, item.get("hit_dmg_u"))
     if "hit_dmg_npc" in item:
-        writestr(outfile, item.get("hit_dmg_npc"))
+        item["hit_dmg_npc"]=getTranslateString(outfile, item.get("hit_dmg_npc"))
     if "no_dmg_msg_u" in item:
-        writestr(outfile, item.get("no_dmg_msg_u"))
+        item["no_dmg_msg_u"]=getTranslateString(outfile, item.get("no_dmg_msg_u"))
     if "no_dmg_msg_npc" in item:
-        writestr(outfile, item.get("no_dmg_msg_npc"))
+        item["no_dmg_msg_npc"]=getTranslateString(outfile, item.get("no_dmg_msg_npc"))
 
 
 def extract_recipes(item):
@@ -691,20 +669,20 @@ def extract_recipes(item):
         if type(item["book_learn"]) is dict:
             for (k, v) in item["book_learn"].items():
                 if type(v) is dict and "recipe_name" in v:
-                    writestr(outfile, v["recipe_name"])
+                    v["recipe_name"]=getTranslateString(outfile, v["recipe_name"])
     if "name" in item:
-        writestr(outfile, item["name"])
+        item["name"]=getTranslateString(outfile, item["name"])
     if "description" in item:
-        writestr(outfile, item["description"])
+        item["description"]=getTranslateString(outfile, item["description"])
     if "blueprint_name" in item:
-        writestr(outfile, item["blueprint_name"])
+        item["blueprint_name"]=getTranslateString(outfile, item["blueprint_name"])
 
 
 def extract_recipe_group(item):
     outfile = get_outfile("recipe_group")
     if "recipes" in item:
         for i in item.get("recipes"):
-            writestr(outfile, i.get("description"))
+            i["description"]=getTranslateString(outfile, i.get("description"))
 
 
 def extract_gendered_dynamic_line_optional(line, outfile, comment=None):
@@ -714,7 +692,7 @@ def extract_gendered_dynamic_line_optional(line, outfile, comment=None):
         options = [gender_options(subject) for subject in subjects]
         for context_list in itertools.product(*options):
             context = " ".join(context_list)
-            writestr(outfile, msg, context=context, comment=comment)
+            line["gendered_line"] = getTranslateString(outfile, msg, context=context, comment=comment)
 
 
 def extract_dynamic_line_optional(line, member, outfile, comment=None):
@@ -749,7 +727,7 @@ def extract_dynamic_line(line, outfile, comment=None):
         for key in dynamic_line_string_keys:
             extract_dynamic_line_optional(line, key, outfile, comment=comment)
     elif type(line) == str:
-        writestr(outfile, line, comment=comment)
+        getTranslateString(outfile, line, comment=comment)
 
 
 def extract_talk_effects(effects, outfile):
@@ -760,17 +738,17 @@ def extract_talk_effects(effects, outfile):
             if "u_buy_monster" in eff and "name" in eff:
                 comment = "Nickname for creature '{}'".format(
                     eff["u_buy_monster"])
-                writestr(outfile, eff["name"], comment=comment)
+                eff["name"]=getTranslateString(outfile, eff["name"], comment=comment)
             if "message" in eff:
-                writestr(outfile, eff["message"])
+                eff["message"]=getTranslateString(outfile, eff["message"])
 
 
 def extract_talk_response(response, outfile):
     if "text" in response:
-        writestr(outfile, response["text"])
+        response["text"]=getTranslateString(outfile, response["text"])
     if "truefalsetext" in response:
-        writestr(outfile, response["truefalsetext"]["true"])
-        writestr(outfile, response["truefalsetext"]["false"])
+        response["truefalsetext"]["true"]=getTranslateString(outfile, response["truefalsetext"]["true"])
+        response["truefalsetext"]["false"]=getTranslateString(outfile, response["truefalsetext"]["false"])
     if "success" in response:
         extract_talk_response(response["success"], outfile)
     if "failure" in response:
@@ -792,7 +770,7 @@ def extract_talk_topic(item):
         comment = None
         if "//~" in item:
             comment = item["//~"]
-        extract_dynamic_line(item["dynamic_line"], outfile, comment)
+        item["dynamic_line"] = translate_dynamic_line(item["dynamic_line"], outfile, comment)
     if "responses" in item:
         for r in item["responses"]:
             extract_talk_response(r, outfile)
@@ -810,11 +788,11 @@ def extract_talk_topic(item):
 
 def extract_trap(item):
     outfile = get_outfile("trap")
-    writestr(outfile, item["name"])
+    item["name"]=getTranslateString(outfile, item["name"])
     if "vehicle_data" in item and "sound" in item["vehicle_data"]:
         comment = "Trap-vehicle collision message for trap '{}'".format(
             item["name"])
-        writestr(outfile, item["vehicle_data"]["sound"], comment=comment)
+        item["vehicle_data"]["sound"]=getTranslateString(outfile, item["vehicle_data"]["sound"], comment=comment)
 
 
 def extract_missiondef(item):
@@ -822,31 +800,31 @@ def extract_missiondef(item):
     item_name = item.get("name")
     if item_name is None:
         raise WrongJSONItem("JSON item don't contain 'name' field", item)
-    writestr(outfile, item_name)
+    item["name"] = getTranslateString(outfile, item_name)
     singular_name = get_singular_name(item_name)
     if "description" in item:
         comment = "Description for mission '{}'".format(singular_name)
-        writestr(outfile, item["description"], comment=comment)
+        item["description"]=getTranslateString(outfile, item["description"], comment=comment)
     if "dialogue" in item:
         dialogue = item.get("dialogue")
         if "describe" in dialogue:
-            writestr(outfile, dialogue.get("describe"))
+            dialogue["describe"]=getTranslateString(outfile, dialogue.get("describe"))
         if "offer" in dialogue:
-            writestr(outfile, dialogue.get("offer"))
+            dialogue["offer"]=getTranslateString(outfile, dialogue.get("offer"))
         if "accepted" in dialogue:
-            writestr(outfile, dialogue.get("accepted"))
+            dialogue["accepted"]=getTranslateString(outfile, dialogue.get("accepted"))
         if "rejected" in dialogue:
-            writestr(outfile, dialogue.get("rejected"))
+            dialogue["rejected"]=getTranslateString(outfile, dialogue.get("rejected"))
         if "advice" in dialogue:
-            writestr(outfile, dialogue.get("advice"))
+            dialogue["advice"]=getTranslateString(outfile, dialogue.get("advice"))
         if "inquire" in dialogue:
-            writestr(outfile, dialogue.get("inquire"))
+            dialogue["inquire"]=getTranslateString(outfile, dialogue.get("inquire"))
         if "success" in dialogue:
-            writestr(outfile, dialogue.get("success"))
+            dialogue["success"]=getTranslateString(outfile, dialogue.get("success"))
         if "success_lie" in dialogue:
-            writestr(outfile, dialogue.get("success_lie"))
+            dialogue["success_lie"]=getTranslateString(outfile, dialogue.get("success_lie"))
         if "failure" in dialogue:
-            writestr(outfile, dialogue.get("failure"))
+            dialogue["failure"]=getTranslateString(outfile, dialogue.get("failure"))
     if "start" in item and "effect" in item["start"]:
         extract_talk_effects(item["start"]["effect"], outfile)
     if "end" in item and "effect" in item["end"]:
@@ -865,7 +843,7 @@ def extract_mutation(item):
         else:
             raise WrongJSONItem("JSON item don't contain 'name' field", item)
     else:
-        writestr(outfile, found)
+        item["name"] = getTranslateString(outfile, found)
 
     simple_fields = ["description"]
 
@@ -874,35 +852,35 @@ def extract_mutation(item):
         # Need that check due format string argument
         if found is not None:
             comment = "Description for {}".format(item_name_or_id)
-            writestr(outfile, found, comment=comment)
+            item[f] = getTranslateString(outfile, found, comment=comment)
 
     if "attacks" in item:
         attacks = item.get("attacks")
         if type(attacks) is list:
             for i in attacks:
                 if "attack_text_u" in i:
-                    writestr(outfile, i.get("attack_text_u"))
+                    i["attack_text_u"]=getTranslateString(outfile, i.get("attack_text_u"))
                 if "attack_text_npc" in i:
-                    writestr(outfile, i.get("attack_text_npc"))
+                    i["attack_text_npc"]=getTranslateString(outfile, i.get("attack_text_npc"))
         else:
             if "attack_text_u" in attacks:
-                writestr(outfile, attacks.get("attack_text_u"))
+                attacks["attack_text_u"]=getTranslateString(outfile, attacks.get("attack_text_u"))
             if "attack_text_npc" in attacks:
-                writestr(outfile, attacks.get("attack_text_npc"))
+                attacks["attack_text_npc"]=getTranslateString(outfile, attacks.get("attack_text_npc"))
 
     if "spawn_item" in item:
-        writestr(outfile, item.get("spawn_item").get("message"))
+        item["spawn_item"]=getTranslateString(outfile, item.get("spawn_item").get("message"))
 
     if "ranged_mutation" in item:
-        writestr(outfile, item.get("ranged_mutation").get("message"))
+        item["ranged_mutation"]=getTranslateString(outfile, item.get("ranged_mutation").get("message"))
 
     if "transform" in item:
-        writestr(outfile, item.get("transform").get("msg_transform"))
+        item["transform"]=getTranslateString(outfile, item.get("transform").get("msg_transform"))
 
     for trigger in item.get("triggers", []):
         for entry in trigger:
-            writestr(outfile, entry.get("msg_on", {}).get("text"))
-            writestr(outfile, entry.get("msg_off", {}).get("text"))
+            entry["msg_on"]=getTranslateString(outfile, entry.get("msg_on", {}).get("text"))
+            entry["msg_off"]=getTranslateString(outfile, entry.get("msg_off", {}).get("text"))
 
 
 def extract_mutation_category(item):
@@ -911,7 +889,7 @@ def extract_mutation_category(item):
     item_name = found = item.get("name")
     if found is None:
         raise WrongJSONItem("JSON item don't contain 'name' field", item)
-    writestr(outfile, found, comment="Mutation class name")
+    item["name"] = getTranslateString(outfile, found, comment="Mutation class name")
 
     simple_fields = ["mutagen_message",
                      "iv_message",
@@ -925,13 +903,11 @@ def extract_mutation_category(item):
         # Need that check due format string argument
         if found is not None:
             comment = "Mutation class: {} {}".format(item_name, f)
-            writestr(outfile, found, comment=comment)
+            item[f] = getTranslateString(outfile, found, comment=comment)
 
     found = item.get("memorial_message")
     comment = "Mutation class: {} Male memorial messsage".format(item_name)
-    writestr(outfile, found, context="memorial_male", comment=comment)
-    comment = "Mutation class: {} Female memorial messsage".format(item_name)
-    writestr(outfile, found, context="memorial_female", comment=comment)
+    item["memorial_message"] = getTranslateString(outfile, found, context="memorial_male", comment=comment)
 
 
 def extract_vehspawn(item):
@@ -942,7 +918,7 @@ def extract_vehspawn(item):
         return
 
     for st in found:
-        writestr(outfile, st.get("description"),
+        st["description"]=getTranslateString(outfile, st.get("description"),
                  comment="Vehicle Spawn Description")
 
 
@@ -954,20 +930,20 @@ def extract_recipe_category(item):
         if cid == 'CC_NONCRAFT':
             return
         cat_name = cid.split("_")[1]
-        writestr(outfile, cat_name, comment="Crafting recipes category name")
+        getTranslateString(outfile, cat_name, comment="Crafting recipes category name")
     else:
         raise WrongJSONItem("Recipe category must have unique id", item)
 
     found = item.get("recipe_subcategories", [])
     for subcat in found:
         if subcat == 'CSC_ALL':
-            writestr(outfile, 'ALL',
+            getTranslateString(outfile, 'ALL',
                      comment="Crafting recipes subcategory all")
             continue
         subcat_name = subcat.split('_')[2]
         comment = "Crafting recipes subcategory of '{}' category".format(
             cat_name)
-        writestr(outfile, subcat_name, comment=comment)
+        getTranslateString(outfile, subcat_name, comment=comment)
 
 
 def extract_gate(item):
@@ -975,7 +951,7 @@ def extract_gate(item):
     messages = item.get("messages", {})
 
     for (k, v) in sorted(messages.items(), key=lambda x: x[0]):
-        writestr(outfile, v,
+        messages[k] = getTranslateString(outfile, v,
                  comment="'{}' action message of some gate object.".format(k))
 
 
@@ -983,45 +959,45 @@ def extract_field_type(item):
     outfile = get_outfile("field_type")
     for fd in item.get("intensity_levels"):
         if "name" in fd:
-            writestr(outfile, fd.get("name"))
+            fd["name"]=getTranslateString(outfile, fd.get("name"))
 
 
 def extract_ter_furn_transform_messages(item):
     outfile = get_outfile("ter_furn_transform_messages")
     if "fail_message" in item:
-        writestr(outfile, item.get("fail_message"))
+        item["fail_message"]=getTranslateString(outfile, item.get("fail_message"))
     if "terrain" in item:
         for terrain in item.get("terrain"):
-            writestr(outfile, terrain.get("message"))
+            terrain["message"]=getTranslateString(outfile, terrain.get("message"))
     if "furniture" in item:
         for furniture in item.get("furniture"):
-            writestr(outfile, furniture.get("message"))
+            furniture["message"]=getTranslateString(outfile, furniture.get("message"))
 
 
 def extract_skill_display_type(item):
     outfile = get_outfile("skill_display_type")
     comment = "display string for skill display type '{}'".format(item["id"])
-    writestr(outfile, item["display_string"], comment=comment)
+    item["display_string"]=getTranslateString(outfile, item["display_string"], comment=comment)
 
 
 def extract_fault(item):
     outfile = get_outfile("fault")
-    writestr(outfile, item["name"])
+    item["name"]=getTranslateString(outfile, item["name"])
     comment = "description for fault '{}'".format(item["name"])
-    writestr(outfile, item["description"], comment=comment)
+    item["description"]=getTranslateString(outfile, item["description"], comment=comment)
     for method in item["mending_methods"]:
         if "name" in method:
             comment = "name of mending method for fault '{}'".format(
                 item["name"])
-            writestr(outfile, method["name"], comment=comment)
+            method["name"]=getTranslateString(outfile, method["name"], comment=comment)
         if "description" in method:
             comment = ("description for mending method '{}' of fault "
                        "'{}'".format(method["name"], item["name"]))
-            writestr(outfile, method["description"], comment=comment)
+            method["description"]=getTranslateString(outfile, method["description"], comment=comment)
         if "success_msg" in method:
             comment = ("success message for mending method '{}' of fault "
                        "'{}'".format(method["name"], item["name"]))
-            writestr(outfile, method["success_msg"], format_strings=True,
+            method["success_msg"]=getTranslateString(outfile, method["success_msg"], format_strings=True,
                      comment=comment)
 
 
@@ -1030,11 +1006,11 @@ def extract_snippets(item):
     text = item["text"]
     if type(text) is not list:
         text = [text]
-    for snip in text:
+    for (k,snip) in text:
         if type(snip) is str:
-            writestr(outfile, snip)
+            text[k] = getTranslateString(outfile, snip)
         else:
-            writestr(outfile, snip["text"])
+            snip["text"]=getTranslateString(outfile, snip["text"])
 
 
 def extract_speed_description(item):
@@ -1045,17 +1021,16 @@ def extract_speed_description(item):
         if 'descriptions' in value:
             descriptions = value.get("descriptions")
             if type(descriptions) is str:
-                writestr(outfile, descriptions, comment=comment)
+                item["description"] = getTranslateString(outfile, descriptions, comment=comment)
             elif type(descriptions) is list:
-                for description in descriptions:
-                    writestr(outfile, description, comment=comment)
+                item["description"] = [getTranslateString(outfile, description, comment=comment)for description in descriptions]
 
 
 def extract_weapon_category(item):
     outfile = get_outfile("weapon_category")
     name = item.get("name")
     comment = "weapon category name"
-    writestr(outfile, name, comment=comment)
+    item["name"] = getTranslateString(outfile, name, comment=comment)
 
 
 def extract_vehicle_part_category(item):
@@ -1064,16 +1039,16 @@ def extract_vehicle_part_category(item):
     short_name = item.get("short_name")
     comment = item.get("//")
     short_comment = "(short name, optimal 1 symbol) " + comment
-    writestr(outfile, name, comment=comment)
-    writestr(outfile, short_name, comment=short_comment)
+    item["name"] = getTranslateString(outfile, name, comment=comment)
+    item["short_name"] = getTranslateString(outfile, short_name, comment=short_comment)
 
 
 def extract_widget(item):
     outfile = get_outfile("widget")
     if "label" in item:
-        writestr(outfile, item["label"])
+        item["label"]=getTranslateString(outfile, item["label"])
     if "strings" in item:
-        writestr(outfile, item["strings"])
+        item["strings"]=getTranslateString(outfile, item["strings"])
 
 
 # these objects need to have their strings specially extracted
@@ -1297,7 +1272,7 @@ def extract_use_action_msgs(outfile, use_action, it_name, kwargs):
         if type(use_action) is dict and f in use_action:
             if it_name:
                 comment = "Use action {} for {}.".format(f, it_name)
-                writestr(outfile, use_action[f], comment=comment, **kwargs)
+                use_action[f]=getTranslateString(outfile, use_action[f], comment=comment, **kwargs)
     # Recursively check sub objects as they may contain more messages.
     if type(use_action) is list:
         for i in use_action:
@@ -1342,22 +1317,22 @@ def extract(item, infilename):
         return
     if name:
         if object_type in needs_plural:
-            writestr(outfile, name, pl_fmt=True, **kwargs)
+            item["name"] = getTranslateString(outfile, name, pl_fmt=True, **kwargs)
         else:
-            writestr(outfile, name, **kwargs)
+            item["name"] = getTranslateString(outfile, name, **kwargs)
         wrote = True
         singular_name = get_singular_name(name)
 
     def do_extract(item):
         wrote = False
         if "name_suffix" in item:
-            writestr(outfile, item["name_suffix"], **kwargs)
+            item["name_suffix"]=getTranslateString(outfile, item["name_suffix"], **kwargs)
             wrote = True
         if "name_unique" in item:
-            writestr(outfile, item["name_unique"], **kwargs)
+            item["name_unique"]=getTranslateString(outfile, item["name_unique"], **kwargs)
             wrote = True
         if "job_description" in item:
-            writestr(outfile, item["job_description"], **kwargs)
+            item["job_description"]=getTranslateString(outfile, item["job_description"], **kwargs)
             wrote = True
         if "use_action" in item:
             extract_use_action_msgs(outfile, item["use_action"],
@@ -1367,7 +1342,7 @@ def extract(item, infilename):
             for cname in item["conditional_names"]:
                 c = "Conditional name for {} when {} matches {}".format(
                     singular_name, cname["type"], cname["condition"])
-                writestr(outfile, cname["name"], comment=c,
+                cname["name"]=getTranslateString(outfile, cname["name"], comment=c,
                          format_strings=True, pl_fmt=True, **kwargs)
                 wrote = True
         if "death_function" in item:
@@ -1376,7 +1351,7 @@ def extract(item, infilename):
                     c = "Death function message for {}".format(singular_name)
                 else:
                     c = None
-                writestr(outfile, item["death_function"]["message"],
+                item["death_function"]["message"]=getTranslateString(outfile, item["death_function"]["message"],
                          comment=c, **kwargs)
                 wrote = True
         if "description" in item:
@@ -1385,96 +1360,95 @@ def extract(item, infilename):
             else:
                 c = None
             if object_type in needs_plural_desc:
-                writestr(outfile, item["description"], comment=c, pl_fmt=True,
+                item["description"]=getTranslateString(outfile, item["description"], comment=c, pl_fmt=True,
                          **kwargs)
             else:
-                writestr(outfile, item["description"], comment=c, **kwargs)
+                item["description"]=getTranslateString(outfile, item["description"], comment=c, **kwargs)
             wrote = True
         if "detailed_definition" in item:
-            writestr(outfile, item["detailed_definition"], **kwargs)
+            item["detailed_definition"]=getTranslateString(outfile, item["detailed_definition"], **kwargs)
             wrote = True
         if "sound" in item:
-            writestr(outfile, item["sound"], **kwargs)
+            item["sound"]=getTranslateString(outfile, item["sound"], **kwargs)
             wrote = True
         if "sound_description" in item:
             comment = "description for the sound of spell '{}'".format(name)
-            writestr(outfile, item["sound_description"], comment=comment,
+            item["sound_description"]=getTranslateString(outfile, item["sound_description"], comment=comment,
                      **kwargs)
             wrote = True
         if ("snippet_category" in item and
                 type(item["snippet_category"]) is list):
             # snippet_category is either a simple string (the category ident)
             # which is not translated, or an array of snippet texts.
-            for entry in item["snippet_category"]:
+            for (k,entry) in item["snippet_category"]:
                 # Each entry is a json-object with an id and text
                 if type(entry) is dict:
-                    writestr(outfile, entry["text"], **kwargs)
+                    entry["text"]=getTranslateString(outfile, entry["text"], **kwargs)
                     wrote = True
                 else:
                     # or a simple string
-                    writestr(outfile, entry, **kwargs)
+                    item["snippet_category"][k] = getTranslateString(outfile, entry, **kwargs)
                     wrote = True
         if "bash" in item and type(item["bash"]) is dict:
             # entries of type technique have a bash member, too.
             # but it's a int, not an object.
             bash = item["bash"]
             if "sound" in bash:
-                writestr(outfile, bash["sound"], **kwargs)
+                bash["sound"]=getTranslateString(outfile, bash["sound"], **kwargs)
                 wrote = True
             if "sound_fail" in bash:
-                writestr(outfile, bash["sound_fail"], **kwargs)
+                bash["sound_fail"]=getTranslateString(outfile, bash["sound_fail"], **kwargs)
                 wrote = True
         if "boltcut" in item:
             boltcut = item["boltcut"]
             if "sound" in boltcut:
                 comment = "sound of bolt cutting '{}'".format(singular_name)
-                writestr(outfile, boltcut["sound"], comment=comment,
+                boltcut["sound"]=getTranslateString(outfile, boltcut["sound"], comment=comment,
                          **kwargs)
                 wrote = True
             if "message" in boltcut:
                 comment = "message when finished bolt cutting '{}'".format(
                           singular_name)
-                writestr(outfile, boltcut["sound"], comment=comment,
+                boltcut["sound"]=getTranslateString(outfile, boltcut["sound"], comment=comment,
                          **kwargs)
                 wrote = True
         if "seed_data" in item:
             seed_data = item["seed_data"]
-            writestr(outfile, seed_data["plant_name"], **kwargs)
+            seed_data["plant_name"]=getTranslateString(outfile, seed_data["plant_name"], **kwargs)
             wrote = True
         if "relic_data" in item and "name" in item["relic_data"]:
-            writestr(outfile, item["relic_data"]["name"], **kwargs)
+            item["relic_data"]["name"]=getTranslateString(outfile, item["relic_data"]["name"], **kwargs)
             wrote = True
         if "text" in item:
-            writestr(outfile, item["text"], **kwargs)
+            item["text"]=getTranslateString(outfile, item["text"], **kwargs)
             wrote = True
         if "message" in item:
-            writestr(outfile, item["message"], format_strings=True,
+            item["message"]=getTranslateString(outfile, item["message"], format_strings=True,
                      comment="Message for {} '{}'".format(object_type, name),
                      **kwargs)
             wrote = True
         if "messages" in item:
-            for message in item["messages"]:
-                writestr(outfile, message, **kwargs)
-                wrote = True
+            item["messages"] = getTranslateString(outfile, item["messages"], **kwargs)
+            wrote = True
         if "valid_mod_locations" in item:
             for mod_loc in item["valid_mod_locations"]:
-                writestr(outfile, mod_loc[0], **kwargs)
+                mod_loc[0]=getTranslateString(outfile, mod_loc[0], **kwargs)
                 wrote = True
         if "info" in item:
             c = "Please leave anything in <angle brackets> unchanged."
-            writestr(outfile, item["info"], comment=c, **kwargs)
+            item["info"]=getTranslateString(outfile, item["info"], comment=c, **kwargs)
             wrote = True
         if "restriction" in item:
-            writestr(outfile, item["restriction"], **kwargs)
+            item["restriction"]=getTranslateString(outfile, item["restriction"], **kwargs)
             wrote = True
         if "verb" in item:
-            writestr(outfile, item["verb"], **kwargs)
+            item["verb"]=getTranslateString(outfile, item["verb"], **kwargs)
             wrote = True
         if "special_attacks" in item:
             special_attacks = item["special_attacks"]
             for special_attack in special_attacks:
                 if "description" in special_attack:
-                    writestr(outfile, special_attack["description"], **kwargs)
+                    special_attack["description"]=getTranslateString(outfile, special_attack["description"], **kwargs)
                     wrote = True
                 if "monster_message" in special_attack:
                     comment = (
@@ -1482,22 +1456,22 @@ def extract(item, infilename):
                         .format(name["str"] if name and "str" in name
                                 else name,
                                 special_attack.get("spell_id")))
-                    writestr(outfile, special_attack["monster_message"],
+                    special_attack["monster_message"]=getTranslateString(outfile, special_attack["monster_message"],
                              format_strings=True, comment=comment, **kwargs)
                     wrote = True
                 if "targeting_sound" in special_attack:
-                    writestr(outfile, special_attack["targeting_sound"],
+                    special_attack["targeting_sound"]=getTranslateString(outfile, special_attack["targeting_sound"],
                              **kwargs)
                     wrote = True
                 if "no_ammo_sound" in special_attack:
-                    writestr(outfile, special_attack["no_ammo_sound"],
+                    special_attack["no_ammo_sound"]=getTranslateString(outfile, special_attack["no_ammo_sound"],
                              **kwargs)
                     wrote = True
         if "footsteps" in item:
-            writestr(outfile, item["footsteps"], **kwargs)
+            item["footsteps"]=getTranslateString(outfile, item["footsteps"], **kwargs)
             wrote = True
         if "revert_msg" in item:
-            writestr(outfile, item["revert_msg"], **kwargs)
+            item["revert_msg"]=getTranslateString(outfile, item["revert_msg"], **kwargs)
             wrote = True
         return wrote
     wrote |= do_extract(item)
@@ -1618,11 +1592,37 @@ if len(ignored_types) != 0:
 #
 #  MODIFY TO TRANSLATE
 #
-#  writestr(\(\w*,\s?(\w+\[.*\]).*\))$    $2=getTranslateString$1
+#  writestr(\(\w*,\s?(\w+\[.*\]).*,?\)?)$    $2=getTranslateString$1
+#  writestr(\(\w*,\s?(\w+)\.get\((".*?").*?\).*,?\)?)$    $2[$3]=getTranslateString$1
 #
 #
 #
-#
+
+def translate_dynamic_line(line, outfile, comment=None):
+    if type(line) == list:
+        return [translate_dynamic_line(l, outfile, comment)for l in line]            
+    elif type(line) == dict:
+        line = translate_gendered_dynamic_line_optional(line, outfile, comment=comment)
+        for key in dynamic_line_string_keys:
+            line = translate_dynamic_line_optional(line, key, outfile, comment=comment)
+    elif type(line) == str:
+        line = getTranslateString(outfile, line, comment=comment)
+    return line
+
+def translate_gendered_dynamic_line_optional(line, outfile, comment=None):
+    if "gendered_line" in line:
+        msg = line["gendered_line"]
+        subjects = line["relevant_genders"]
+        options = [gender_options(subject) for subject in subjects]
+        for context_list in itertools.product(*options):
+            context = " ".join(context_list)
+            line["gendered_line"] = getTranslateString(outfile, msg, context=context, comment=comment)
+    return line
+
+def translate_dynamic_line_optional(line, member, outfile, comment=None):
+    if member in line:
+        line[member] = translate_dynamic_line(line[member], outfile, comment=comment)
+    return line
 
 def getTranslateString(filename=None,string="", context=None, format_strings=False, comment=None, pl_fmt=False, _local_fp_cache=dict()):
     "Wrap the string and write to the file."
