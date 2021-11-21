@@ -11,14 +11,14 @@ from optparse import OptionParser
 from sys import platform
 from sys import exit
 
-zh_CN = gettext.translation("cataclysm-dda", localedir="lang/mo", languages=["zh_CN"])
-zh_CN.install()
 
 # Must parse command line arguments here
 # 'options' variable is referenced in our defined functions below
 
 parser = OptionParser()
 parser.add_option("-v", "--verbose", dest="verbose", help="be verbose")
+parser.add_option("-o", "--out", dest="out_dir",default="translate/",help="out dir")
+parser.add_option("-l", "--languages", dest="languages",default="",help="translate languages")
 (options, args) = parser.parse_args()
 
 
@@ -951,16 +951,16 @@ def npgettext(context, single, plural):
     # Fuck python 3.6, which doens't support pgettext
     if context:
         if not plural:
-            text = zh_CN.gettext(f"{context}\004{single}")
+            text = translater.gettext(f"{context}\004{single}")
         if plural or text == single:
-            text = zh_CN.ngettext(f"{context}\004{single}", f"{context}\004{plural}", 1)
+            text = translater.ngettext(f"{context}\004{single}", f"{context}\004{plural}", 1)
     else:
         if not single:
             return ''
         if not plural:
-            text = zh_CN.gettext(single)
+            text = translater.gettext(single)
         if plural or text == single:
-            text = zh_CN.ngettext(single, plural, 1)
+            text = translater.ngettext(single, plural, 1)
     return single if '\004' in text else text
 
 
@@ -1163,7 +1163,7 @@ def extract(item, infilename):
         item["revert_msg"] = writestr(item["revert_msg"], **kwargs)
 
 
-def extract_all_from_dir(json_dir):
+def extract_all_from_dir(json_dir,language_code):
     """Extract strings from every json file in the specified directory,
     recursing into any subdirectories."""
     allfiles = os.listdir(json_dir)
@@ -1172,6 +1172,7 @@ def extract_all_from_dir(json_dir):
     skiplist = [os.path.normpath(".gitkeep")]
     for f in allfiles:
         full_name = os.path.join(json_dir, f)
+        full_translate_file = os.path.join(options.out_dir,language_code,json_dir,f)
         if os.path.isdir(full_name):
             dirs.append(f)
         elif f in skiplist or full_name in ignore_files:
@@ -1179,15 +1180,15 @@ def extract_all_from_dir(json_dir):
         elif any(full_name.startswith(dir) for dir in ignore_directories):
             continue
         elif f.endswith(".json"):
-            extract_all_from_file(full_name)
+            extract_all_from_file(full_name,full_translate_file)
         elif f not in not_json:
             if options.verbose:
                 print("Skipping file: '{}'".format(f))
     for d in dirs:
-        extract_all_from_dir(os.path.join(json_dir, d))
+        extract_all_from_dir(os.path.join(json_dir, d),language_code)
 
 
-def extract_all_from_file(json_file):
+def extract_all_from_file(json_file,translate_file):
     "Extract translatable strings from every object in the specified file."
     if options.verbose:
         print("Loading {}".format(json_file))
@@ -1201,7 +1202,9 @@ def extract_all_from_file(json_file):
         else:
             for jsonobject in jsondata:
                 extract(jsonobject, json_file)
-        json.dump(jsondata, open(json_file, mode="w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        if not os.path.exists(os.path.dirname(translate_file)):
+            os.makedirs(os.path.dirname(translate_file))
+        json.dump(jsondata, open(translate_file, mode="w", encoding="utf-8"), ensure_ascii=False, indent=2)
     except WrongJSONItem as E:
         print("---\nFile: '{0}'".format(json_file))
         print(E)
@@ -1226,18 +1229,26 @@ if len(ignored_types) != 0:
         print(ignored)
     exit(-1)
 
-print("==> Parsing JSON")
-for i in sorted(directories):
-    print("----> Traversing directory {}".format(i))
-    extract_all_from_dir(i)
-print("==> Finalizing")
-if len(known_types - found_types) != 0:
-    print("WARNING: type {} not found in any JSON objects".format(
-        known_types - found_types))
-if len(needs_plural - found_types) != 0:
-    print("WARNING: type {} from needs_plural not found in any JSON "
-          "objects".format(needs_plural - found_types))
+if options.languages != "":
+    lang_codes = options.languages.split(",")
+else:
+    mo_dir = "lang/mo/"
+    lang_codes = os.listdir(mo_dir)
+for lang_code in lang_codes:
+    translater = gettext.translation("cataclysm-dda", localedir="lang/mo", languages=[lang_code])
+    translater.install()
+    print("==> Parsing JSON")
+    for i in sorted(directories):
+        print("----> Traversing directory {}".format(i))
+        extract_all_from_dir(i,lang_code)
+    print("==> Finalizing")
+    if len(known_types - found_types) != 0:
+        print("WARNING: type {} not found in any JSON objects".format(
+            known_types - found_types))
+    if len(needs_plural - found_types) != 0:
+        print("WARNING: type {} from needs_plural not found in any JSON "
+            "objects".format(needs_plural - found_types))
 
-print("Output files in %s" % to_dir)
+    print("Output files in %s" % to_dir)
 
 # done.

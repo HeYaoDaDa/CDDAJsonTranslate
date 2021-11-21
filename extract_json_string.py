@@ -16,7 +16,8 @@ from sys import exit
 
 parser = OptionParser()
 parser.add_option("-v", "--verbose", dest="verbose", help="be verbose")
-parser.add_option("-o", "--out", dest="out_dir",default="translate/",help="out dir",)
+parser.add_option("-o", "--out", dest="out_dir",default="translate/",help="out dir")
+parser.add_option("-l", "--languages", dest="languages",default="",help="translate languages")
 (options, args) = parser.parse_args()
 
 
@@ -1523,6 +1524,22 @@ if len(ignored_types) != 0:
 #
 #
 
+def npgettext(context, single, plural):
+    # Fuck python 3.6, which doens't support pgettext
+    if context:
+        if not plural:
+            text = translater.gettext(f"{context}\004{single}")
+        if plural or text == single:
+            text = translater.ngettext(f"{context}\004{single}", f"{context}\004{plural}", 1)
+    else:
+        if not single:
+            return ''
+        if not plural:
+            text = translater.gettext(single)
+        if plural or text == single:
+            text = translater.ngettext(single, plural, 1)
+    return single if '\004' in text else text
+
 def translate_dynamic_line(line, outfile, comment=None):
     if type(line) == list:
         return [translate_dynamic_line(l, outfile, comment)for l in line]            
@@ -1560,15 +1577,15 @@ def getTranslateString(filename=None,string="", context=None, format_strings=Fal
             raise WrongJSONItem("ERROR: 'ctxt' found in json when `context` "
                                 "parameter is specified", string)
         if "str_pl" in string:
-            string["str_pl"] = translater.npgettext(context, string["str_pl"], string["str_pl"],1)
+            string["str_pl"] = npgettext(context, string["str_pl"], string["str_pl"])
         if "str" in string:
-            string["str"] = translater.npgettext(context, string["str"], pl_fmt,1)
+            string["str"] = npgettext(context, string["str"], pl_fmt)
         elif "str_sp" in string:
-            string["str_sp"] = translater.npgettext(context, string["str_sp"], string["str_sp"],1)
+            string["str_sp"] = npgettext(context, string["str_sp"], string["str_sp"])
         else:
             raise WrongJSONItem("ERROR: 'str' or 'str_sp' not found", string)
     elif type(string) is str:
-        string = translater.npgettext(context, string, pl_fmt,1)
+        string = npgettext(context, string, pl_fmt)
     elif string is None:
         return
     else:
@@ -1624,7 +1641,10 @@ def translate_all_from_dir(json_dir,language_code):
 
 
 mo_dir = "lang/mo/"
-lang_codes = os.listdir(mo_dir)
+if options.languages != "":
+    lang_codes = options.languages.split(",")
+else:
+    lang_codes = os.listdir(mo_dir)
 
 print("==> Generating the list of all Git tracked files")
 print("==> Parsing JSON")
