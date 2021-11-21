@@ -410,75 +410,17 @@ def extract_move_mode(item):
 def extract_effect_type(item):
     # writestr will not write string if it is None.
     outfile = get_outfile("effects")
-    ctxt_name = item.get("name", ())
+    if item.get("name"):
+        item["name"] = [getTranslateString(outfile,i) for i in item["name"]]
+    if item.get("desc"):
+        item["desc"] = [getTranslateString(outfile,i) for i in item["desc"]]
+    if item.get("reduced_desc"):
+        item["reduced_desc"] = [getTranslateString(outfile,i) for i in item["reduced_desc"]]
 
-    if ctxt_name:
-        if len(ctxt_name) == len(item.get("desc", ())):
-            for nm_desc in zip(ctxt_name, item.get("desc", ())):
-                comment = "Description of effect '{}'.".format(nm_desc[0])
-                nm_desc[0]=getTranslateString(outfile, nm_desc[0])
-                nm_desc[1]=getTranslateString(outfile, nm_desc[1], format_strings=True,
-                         comment=comment)
-        else:
-            item["name"] = [getTranslateString(outfile,i)for i in ctxt_name]
-            for f in ["desc", "reduced_desc"]:
-                item[f] = [getTranslateString(outfile,i)for i in item.get(f, ())]
-
-    name = None
-    if ctxt_name:
-        name = [i["str"] if type(i) is dict else i for i in ctxt_name]
-    # apply_message
-    msg = item.get("apply_message")
-    if not name:
-        item["apply_message"] = getTranslateString(outfile, msg, format_strings=True)
-    else:
-        comment = "Apply message for effect(s) '{}'.".format(', '.join(name))
-        item["apply_message"] = getTranslateString(outfile, msg, format_strings=True, comment=comment)
-
-    # remove_message
-    msg = item.get("remove_message")
-    if not name:
-        item["remove_message"] = getTranslateString(outfile, msg, format_strings=True)
-    else:
-        comment = "Remove message for effect(s) '{}'.".format(', '.join(name))
-        item["remove_message"] = getTranslateString(outfile, msg, format_strings=True, comment=comment)
-
-    # miss messages
-    msg = item.get("miss_messages", ())
-    item["miss_messages"] = [getTranslateString(outfile, m[0])for m in msg]
-    item["decay_messages"] = [getTranslateString(outfile, m[0])for m in msg]
-
-    # speed_name
-    if "speed_name" in item:
-        if not name:
-            item["speed_name"]=getTranslateString(outfile, item.get("speed_name"))
-        else:
-            comment = "Speed name of effect(s) '{}'.".format(', '.join(name))
-            item["speed_name"]=getTranslateString(outfile, item.get("speed_name"), comment=comment)
-
-    # death_msg
-    if "death_msg" in item:
-        if not name:
-            item["death_msg"]=getTranslateString(outfile, item.get("death_msg"))
-        else:
-            comment = "Death message of effect(s) '{}'."
-            comment.format(', '.json(name))
-            item["death_msg"]=getTranslateString(outfile, item.get("death_msg"), comment=comment)
-    # apply and remove memorial messages.
-    msg = item.get("apply_memorial_log")
-    if not name:
-        item["apply_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male")
-    else:
-        comment = "Male memorial apply log for effect(s) '{}'.".format(
-            ', '.join(name))
-        item["apply_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
-    msg = item.get("remove_memorial_log")
-    if not name:
-        item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male")
-    else:
-        comment = "Male memorial remove log for effect(s) '{}'.".format(
-            ', '.join(name))
-        item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
+    keys = ["apply_message", "remove_message", "miss_messages", "decay_messages", "speed_name", "apply_memorial_log", "remove_memorial_log"]
+    for key in keys:
+        if item.get(key):
+            item[key] = getTranslateString(outfile,item[key])
 
 
 def extract_gun(item):
@@ -989,7 +931,7 @@ def extract_snippets(item):
     text = item["text"]
     if type(text) is not list:
         text = [text]
-    for (k,snip) in text:
+    for (k,snip) in enumerate(text):
         if type(snip) is str:
             text[k] = getTranslateString(outfile, snip)
         else:
@@ -1363,7 +1305,7 @@ def extract(item, infilename):
                 type(item["snippet_category"]) is list):
             # snippet_category is either a simple string (the category ident)
             # which is not translated, or an array of snippet texts.
-            for (k,entry) in item["snippet_category"]:
+            for (k,entry) in enumerate(item["snippet_category"]):
                 # Each entry is a json-object with an id and text
                 if type(entry) is dict:
                     entry["text"]=getTranslateString(outfile, entry["text"], **kwargs)
