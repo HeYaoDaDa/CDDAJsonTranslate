@@ -472,8 +472,6 @@ def extract_effect_type(item):
         comment = "Male memorial apply log for effect(s) '{}'.".format(
             ', '.join(name))
         item["apply_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
-        comment = "Female memorial apply log for effect(s) '{}'.".format(
-            ', '.join(name))
     msg = item.get("remove_memorial_log")
     if not name:
         item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male")
@@ -481,8 +479,6 @@ def extract_effect_type(item):
         comment = "Male memorial remove log for effect(s) '{}'.".format(
             ', '.join(name))
         item["remove_memorial_log"] = getTranslateString(outfile, msg, context="memorial_male", comment=comment)
-        comment = "Female memorial remove log for effect(s) '{}'.".format(
-            ', '.join(name))
 
 
 def extract_gun(item):
@@ -571,18 +567,10 @@ def extract_professions(item):
         nm["male"]=getTranslateString(outfile, nm["male"], context="profession_male")
         item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_male",
                  comment="Profession ({}) description".format(nm["male"]))
-
-        nm["female"]=getTranslateString(outfile, nm["female"], context="profession_female")
-        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_female",
-                 comment="Profession ({0}) description".format(nm["female"]))
     else:
         item["name"] = getTranslateString(outfile, nm, context="profession_male")
         item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_male",
                  comment="Profession (male {}) description".format(nm))
-
-        item["name"] = getTranslateString(outfile, nm, context="profession_female")
-        item["description"]=getTranslateString(outfile, item["description"], context="prof_desc_female",
-                 comment="Profession (female {}) description".format(nm))
 
 
 def extract_scenarios(item):
@@ -591,18 +579,13 @@ def extract_scenarios(item):
     name = item.get("name")
     comment = "Name for scenario '{}' for a male character".format(name)
     item["name"] = getTranslateString(outfile, name, context="scenario_male", comment=comment)
-    comment = "Name for scenario '{}' for a female character".format(name)
-    item["name"] = getTranslateString(outfile, name, context="scenario_female", comment=comment)
     if name:
         msg = item.get("description")
         if msg:
             comment = ("Description for scenario '{}' for a male "
                        "character.".format(name))
             item["description"] = getTranslateString(outfile, msg, context="scen_desc_male", comment=comment)
-            comment = ("Description for scenario '{}' for a female "
-                       "character.".format(name))
-            item["description"] = getTranslateString(outfile, msg, context="scen_desc_female",
-                     comment=comment)
+            
         msg = item.get("start_name")
         if msg:
             comment = "Starting location for scenario '{}'.".format(name)
@@ -629,7 +612,7 @@ def extract_mapgen(item):
         elif objkey == "signs":
             for (k, v) in items_sorted_by_key(objval):
                 sign = v.get("signage", None)
-                sign["signage"] = getTranslateString(outfile, sign, comment="Sign")
+                v["signage"] = getTranslateString(outfile, sign, comment="Sign")
         elif objkey == "computers":
             for (k, v) in items_sorted_by_key(objval):
                 if "name" in v:
@@ -648,7 +631,7 @@ def extract_palette(item):
     if "signs" in item:
         for (k, v) in items_sorted_by_key(item["signs"]):
             sign = v.get("signage", None)
-            sign["signage"] = getTranslateString(outfile, sign, comment="Sign")
+            v["signage"] = getTranslateString(outfile, sign, comment="Sign")
 
 
 def extract_monster_attack(item):
