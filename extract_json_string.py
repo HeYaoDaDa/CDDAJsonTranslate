@@ -3,7 +3,6 @@
 
 import gettext
 import json
-import json
 import os
 import itertools
 import subprocess
