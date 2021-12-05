@@ -180,6 +180,8 @@ def find_json(jsondata:dict,jsons:list):
             break
     for i in jsons:
         if "type" in i:
+            if "copy-from" in i and i["copy-from"] == get_id(i):
+                continue
             if id == get_id(i):
                 eq_id_jsons.append(i)
     for i in eq_id_jsons:
@@ -203,6 +205,7 @@ def process_json_inheritance(sub:dict, super:dict):
         result = {}
     else:
         result = copy.deepcopy(super)
+    #TODO looks_like
     my_sub = copy.deepcopy(sub)
     del my_sub["copy-from"]
     if "abstract" in result:
@@ -328,9 +331,12 @@ def convert_json(json_data:dict):
     else:
         result.append(json_data)
     return result
-
+mods = sort_mods(scan_mods(options.target_dir))
 init_out_dir()
-old_jsons = convert_jsons(scan_all_json(options.target_dir))
+old_jsons = []
 processed_jsons = []
-process_json_dir(options.target_dir,old_jsons,processed_jsons)
+for mod in mods:
+    print("==> {} <==".format(mod["name"]))
+    old_jsons = convert_jsons(scan_all_json(mod["path"]))
+    process_json_dir(mod["path"],old_jsons,processed_jsons)
 # print(find_json({"copy-from":"generic_city_building_no_sidewalk","type":"overmap_terrain"},old_jsons))
