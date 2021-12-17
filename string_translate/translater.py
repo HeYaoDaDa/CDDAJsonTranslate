@@ -33,6 +33,7 @@ from .translaters.ter_furn_transform import translate_ter_furn_transform
 from .translaters.trap import translate_trap
 from .translaters.vehicle_part_category import translate_vehicle_part_category
 from .translaters.vehicle_spawn import translate_vehicle_spawn
+from .translaters.weakpoint_set import translate_weakpoint_set
 from .translaters.widget import translate_widget
 
 
@@ -187,5 +188,6 @@ extract_specials = {
     "ter_furn_transform": translate_ter_furn_transform,
     "skill_display_type": translate_skill_display_type,
     "vehicle_part_category": translate_vehicle_part_category,
+    "weakpoint_set": translate_weakpoint_set,
     "widget": translate_widget,
 }
