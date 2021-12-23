@@ -138,3 +138,10 @@ def translate_generic(translation: NullTranslations, json_object):
     if "revert_msg" in json_object:
         json_object["revert_msg"] = translate_any(
             translation, json_object["revert_msg"])
+
+    if "pocket_data" in json_object:
+        for pocket in json_object["pocket_data"]:
+            if "description" in pocket:
+                pocket["description"] = translate_any(
+                    translation, pocket["description"]
+                )
