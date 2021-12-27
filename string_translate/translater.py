@@ -68,6 +68,7 @@ ignorable = [
     "overmap_connection",
     "overmap_location",
     "overmap_special",
+    "overmap_special_migration",
     "profession_item_substitutions",
     "region_overlay",
     "region_settings",
