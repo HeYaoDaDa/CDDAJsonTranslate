@@ -12,12 +12,13 @@ parser.add_argument("-i", "--info", dest="info",
                     action="store_true", help="is show debug info")
 parser.add_argument("-d", "--data_dir", dest="data_dir",
                     help="game data/ path", type=str, nargs="*")
-parser.add_argument("-o", "--out_dir", dest="out_dir",
-                    help="translated json file output path", type=str)
-parser.add_argument("-l", "--lang", dest="langs",
-                    help="translate language list", type=str, nargs="*")
 parser.add_argument("-m", "--mo_dir", dest="mo_dir",
                     help="mo file dir path", type=str)
+parser.add_argument("-l", "--lang", dest="langs",
+                    help="translate language list", type=str, nargs="*")
+parser.add_argument("-o", "--out_dir", dest="out_dir",
+                    help="translated json file output path", type=str)
+
 args = parser.parse_args()
 
 if not args.data_dir:
