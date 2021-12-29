@@ -7,10 +7,6 @@ from .translater import ignorable, automatically_convertible, extract_specials
 from .translaters.generic import translate_generic
 
 
-def get_game_relative_path(absolutely_path: str):
-    return absolutely_path[absolutely_path.index("data/"):]
-
-
 def translate_json_object(translation: NullTranslations, json_object: dict):
     if "type" in json_object and type(json_object["type"]) is str:
         json_type = json_object["type"].lower()
@@ -51,21 +47,21 @@ def translate_json_file(translation: NullTranslations, file_path: str, out_file_
         raise E
 
 
-def translate_json_dir(translation: NullTranslations, dir_path: str, out_path: str, lang_code: str):
+def translate_json_dir(translation: NullTranslations, dir_path: str, out_path: str):
     allfiles = sorted(os.listdir(dir_path))
     dirs = []
     for file in allfiles:
-        full_name = os.path.join(dir_path, file)
-        full_translate_file = os.path.join(
-            out_path, lang_code, get_game_relative_path(dir_path), file)
-        if os.path.isdir(full_name):
-            dirs.append(file)
+        full_file = os.path.join(dir_path, file)
+        full_translate_file = os.path.join(out_path, file)
+        if os.path.isdir(full_file):
+            dirs.append((full_file, full_translate_file))
         elif file.endswith(".json"):
-
             translate_json_file(
-                translation, full_name, full_translate_file)
+                translation, full_file, full_translate_file
+            )
         else:
             print("Skipping file: '{}'".format(file))
-    for dir in dirs:
-        translate_json_dir(translation, os.path.join(dir_path, dir),
-                           out_path, lang_code)
+    for dir_path, out_path in dirs:
+        translate_json_dir(
+            translation, dir_path, out_path
+        )

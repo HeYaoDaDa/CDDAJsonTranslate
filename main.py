@@ -60,5 +60,7 @@ for lang in args.langs:
     translater = gettext.translation(
         "cataclysm-dda", localedir=args.mo_dir, languages=[lang])
     for data_dir in args.data_dir:
-        translate_json_dir(translater, data_dir, args.out_dir, lang)
+        translate_json_dir(
+            translater, data_dir, os.path.join(args.out_dir, lang)
+        )
     print("\t----- process {} end -----".format(lang))
