@@ -145,3 +145,7 @@ def translate_generic(translation: NullTranslations, json_object):
                 pocket["description"] = translate_any(
                     translation, pocket["description"]
                 )
+            if "name" in pocket:
+                pocket["name"] = translate_any(
+                    translation, pocket["name"]
+                )
