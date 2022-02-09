@@ -43,6 +43,7 @@ ignorable = [
     "ammo_effect",
     "behavior",
     "butchery_requirement",
+    "charge_migration_blacklist",
     "charge_removal_blacklist",
     "city_building",
     "colordef",
