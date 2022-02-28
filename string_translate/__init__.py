@@ -1,13 +1,11 @@
 import os
-import shutil
 import gettext
 from .translate import translate_json_dir
 
 def translate_data(data_dirs:list[str],out_dir:str,mo_dir:str,langs:list[str]):
-    if os.path.exists(out_dir):
-        shutil.rmtree(out_dir, True)
-    os.mkdir(out_dir)
-
+    if not os.path.exists(out_dir):
+        os.mkdir(out_dir)
+    
     if langs == None:
         langs = os.listdir(mo_dir)
 
