@@ -2,7 +2,7 @@ import os
 import gettext
 from .translate import translate_json_dir
 
-def translate_data(data_dirs:list[str],out_dir:str,mo_dir:str,langs:list[str]):
+def translate_data(data_dirs:list[str],out_dir:str,mo_dir:str,langs:list[str]=None):
     if not os.path.exists(out_dir):
         os.mkdir(out_dir)
     
